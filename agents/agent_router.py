@@ -258,6 +258,7 @@ Analyze the user query and make an intelligent routing decision."""
     
     def get_best_agent(self, query: str, available_agents: List[Dict]) -> Tuple[str, Dict]:
         """
+
         Get the best agent for the query from available agents using function calling
         Returns (agent_id, analysis) - agent_id can be None for raw LLM
         """

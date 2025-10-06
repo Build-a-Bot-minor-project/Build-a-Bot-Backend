@@ -4,7 +4,7 @@ services:
   buildabot:
     build: .
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Maps server port 8000 to container port 8000
     environment:
       # OpenAI Configuration
       - OPENAI_API_KEY=${OPENAI_API_KEY}

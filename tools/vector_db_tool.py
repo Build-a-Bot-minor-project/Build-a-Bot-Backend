@@ -1,5 +1,5 @@
 """
-Vector Database Tool using Qdrant
+Vector Database Tool using Qdrant DB
 """
 
 import os
