@@ -112,9 +112,9 @@ app = FastAPI(
 )
 
 # Configure CORS origins
-FRONTEND_URL = os.getenv("FRONTEND_URL", "https://build-a-bot-alpha.vercel.app")
 allowed_origins = [
-    FRONTEND_URL,
+    "https://build-a-bot-alpha.vercel.app",
+    "https://quadrangled-faith-sociably.ngrok-free.dev",
     "http://localhost:3000",  # For local development
     "http://localhost:5173",  # For Vite dev server
     "http://127.0.0.1:3000",
