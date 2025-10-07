@@ -111,13 +111,38 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Configure CORS origins
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://build-a-bot-alpha.vercel.app")
+allowed_origins = [
+    FRONTEND_URL,
+    "http://localhost:3000",  # For local development
+    "http://localhost:5173",  # For Vite dev server
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173"
+]
+
+# Add additional origins from environment if specified
+additional_origins = os.getenv("ADDITIONAL_CORS_ORIGINS", "")
+if additional_origins:
+    allowed_origins.extend([origin.strip() for origin in additional_origins.split(",")])
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers",
+    ],
 )
 
 # Initialize OpenAI client
@@ -236,6 +261,11 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+@app.options("/{path:path}")
+async def options_handler(path: str):
+    """Handle preflight OPTIONS requests for CORS"""
+    return {"message": "OK"}
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
