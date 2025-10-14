@@ -241,6 +241,11 @@ pipelines_storage: Dict[str, AgentPipeline] = {}
 # Initialize database tables
 init_db()
 
+# Test database connection
+from db import test_db_connection
+if not test_db_connection():
+    print("⚠️  Database connection issues detected. The application may not work properly.")
+
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -260,7 +265,21 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+    from db import test_db_connection
+    
+    db_status = test_db_connection()
+    overall_status = "healthy" if db_status else "degraded"
+    
+    return {
+        "status": overall_status,
+        "timestamp": datetime.now().isoformat(),
+        "database": "connected" if db_status else "disconnected",
+        "services": {
+            "database": db_status,
+            "openai": bool(os.getenv("OPENAI_API_KEY")),
+            "qdrant": bool(os.getenv("QDRANT_URL") and os.getenv("QDRANT_API_KEY"))
+        }
+    }
 
 @app.options("/{path:path}")
 async def options_handler(path: str):
